@@ -1,0 +1,169 @@
+#!/usr/bin/python3
+import tkinter as tk
+from PIL import ImageTk, Image
+import tkinter.ttk as ttk
+import os
+
+
+class NewprojectApp:
+    def __init__(self, master=None):
+        self.master = master
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
+        self.MainFrame = ttk.Frame(master)
+        self.MainFrame.configure(height=200, width=200)
+        self.title = ttk.Label(self.MainFrame)
+        self.title.configure(text='BUDY')
+        self.title.grid(column=0, padx=100, pady=40, row=0)
+        self.draw = ttk.Button(self.MainFrame)
+        self.draw.configure(text='DRAW', command=self.open_DrawFrame)
+        self.draw.grid(column=0, padx=30, pady=20, row=1)
+        self.play = ttk.Button(self.MainFrame)
+        self.play.configure(text='PLAY', command=self.open_PlayFrame)
+        self.play.grid(column=0, padx=30, pady=20, row=2)
+        self.gallery = ttk.Button(self.MainFrame)
+        self.gallery.configure(text='GALLERY', command=self.open_GalleryFrame)
+        self.gallery.grid(column=0, padx=160, pady=20, row=3)
+
+        self.DrawFrame = ttk.Frame(master)
+        self.DrawFrame.configure(height=200, width=200)
+        self.DrawTitle = ttk.Label(self.DrawFrame)
+        self.DrawTitle.configure(text='DRAW')
+        self.DrawTitle.grid(column=1, padx=10, pady=10, row=0)
+        self.drawtool1 = ttk.Button(self.DrawFrame)
+        self.drawtool1.configure(text='drawtool1')
+        self.drawtool1.grid(column=0, padx=10, pady=10, row=2)
+        self.drawtool2 = ttk.Button(self.DrawFrame)
+        self.drawtool2.configure(text='drawtool2')
+        self.drawtool2.grid(column=1, row=2)
+        self.drawtool3 = ttk.Button(self.DrawFrame)
+        self.drawtool3.configure(text='drawtool3')
+        self.drawtool3.grid(column=2, padx=10, row=2)
+        self.DrawingDisplay = ttk.Frame(self.DrawFrame)
+        self.DrawingDisplay.configure(height=200, width=200)
+        self.DrawingDisplay.grid(column=1, row=1)
+        self.Backbtn = ttk.Button(self.DrawFrame)
+        self.Backbtn.configure(text='Back', command=self.close_DrawFrame)
+        self.Backbtn.grid(column=0, row=0)
+        self.DrawFrame.grid(column=0, row=4)
+        self.DrawFrame.grid_remove() 
+
+        self.PlayFrame = ttk.Frame(master)
+        self.PlayFrame.configure(height=200, width=200)
+        self.PlayTitle = ttk.Label(self.PlayFrame)
+        self.PlayTitle.configure(text='PLAY')
+        self.PlayTitle.grid(column=1, padx=10, pady=10, row=0)
+        self.talkbtn = ttk.Button(self.PlayFrame)
+        self.talkbtn.configure(text='Talk')
+        self.talkbtn.grid(column=0, padx=10, pady=10, row=2)
+        self.feedbtn = ttk.Button(self.PlayFrame)
+        self.feedbtn.configure(text='Feed')
+        self.feedbtn.grid(column=1, row=2)
+        self.playbtn = ttk.Button(self.PlayFrame)
+        self.playbtn.configure(text='Play')
+        self.playbtn.grid(column=2, padx=10, row=2)
+        self.frame19 = ttk.Frame(self.PlayFrame)
+        self.frame19.configure(height=200, width=200)
+        self.frame19.grid(column=1, row=1)
+        self.Back = ttk.Button(self.PlayFrame)
+        self.Back.configure(text='Back', command=self.close_PlayFrame)
+        self.Back.grid(column=0, row=0)
+        self.PlayFrame.grid(column=0, row=5)
+        self.PlayFrame.grid_remove()
+
+        self.GalleryFrame = ttk.Frame(master)
+        self.GalleryFrame.configure(height=200, width=200)
+        self.GalleryTitle = ttk.Label(self.GalleryFrame)
+        self.GalleryTitle.configure(text='GALLERY')
+        self.GalleryTitle.grid(column=1, padx=10, pady=10, row=0)
+        self.LeftNext = ttk.Button(self.GalleryFrame)
+        self.LeftNext.configure(text='< Next', command=self.next_image)
+        self.LeftNext.grid(column=0, padx=10, pady=10, row=2)
+        self.Selectbtn = ttk.Button(self.GalleryFrame)
+        self.Selectbtn.configure(text='Select')
+        self.Selectbtn.grid(column=1, row=2)
+        self.RightNext = ttk.Button(self.GalleryFrame)
+        self.RightNext.configure(text='Next >')
+        self.RightNext.grid(column=2, padx=10, row=2)
+        self.frame21 = ttk.Frame(self.GalleryFrame)
+        self.frame21.configure(height=200, width=200)
+        self.image_folder = "image_folder"
+        self.image_files = self.get_image_files()
+
+        self.current_image_index = 0
+        self.current_image = self.load_image()
+
+        self.image_label = ttk.Label(self.frame21)
+        self.image_label.configure(image=self.current_image)
+        self.image_label.pack()
+
+        self.frame21.grid(column=1, row=1)
+        self.button37 = ttk.Button(self.GalleryFrame)
+        self.button37.configure(text='Back', command=self.close_GalleryFrame)
+        self.button37.grid(column=0, row=0)
+        self.BudyName = ttk.Entry(self.GalleryFrame)
+        self.BudyName.grid(column=1, row=1, sticky="n")
+        self.GalleryFrame.grid(column=0, row=6)
+        self.GalleryFrame.grid_remove()
+
+        # self.MainFrame.pack(side="top")
+        self.MainFrame.grid()
+
+        self.mainwindow = self.MainFrame
+
+    def run(self):
+        self.mainwindow.mainloop()
+
+    def get_image_files(self):
+        image_files = []
+        for file in os.listdir(self.image_folder):
+            if file.endswith(".png") or file.endswith(".jpg"):
+                image_files.append(file)
+        return image_files
+
+    def load_image(self):
+        image_path = os.path.join(self.image_folder, self.image_files[self.current_image_index])
+        image = Image.open(image_path)
+        image = image.resize((200, 200))
+        photo = ImageTk.PhotoImage(image)
+        return photo
+    
+    def update_BudyName(self):
+        filename = self.image_files[self.current_image_index]
+        self.BudyName.delete(0, tk.END)
+        self.BudyName.insert(0, filename)
+
+    def next_image(self):
+        self.current_image_index = (self.current_image_index + 1) % len(self.image_files)
+        self.current_image = self.load_image()
+        self.image_label.configure(image=self.current_image)
+        self.update_BudyName()
+
+    def open_DrawFrame(self):
+        self.MainFrame.grid_remove()
+        self.DrawFrame.grid()
+        
+    def close_DrawFrame(self):
+        self.DrawFrame.grid_remove()
+        self.MainFrame.grid()
+
+    def open_PlayFrame(self):
+        self.MainFrame.grid_remove()
+        self.PlayFrame.grid()
+
+    def close_PlayFrame(self):
+        self.PlayFrame.grid_remove()
+        self.MainFrame.grid()
+
+    def open_GalleryFrame(self):
+        self.MainFrame.grid_remove()
+        self.GalleryFrame.grid()
+
+    def close_GalleryFrame(self):
+        self.GalleryFrame.grid_remove()
+        self.MainFrame.grid()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = NewprojectApp(root)
+    app.run()
